@@ -1,0 +1,7 @@
+# secret
+.env
+
+# package
+node_modules
+
+.vscode
