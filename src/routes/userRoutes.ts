@@ -1,5 +1,15 @@
 import express from "express";
-import { createUser, deleteUser, getAllUsers, getUserById, updateUser } from "../controller/userController";
+import {
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+} from "../controller/userController";
+import {
+  validateCreateUser,
+  validateUpdateUser,
+} from "../middleware/validator";
 
 const router = express.Router();
 

@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import { pool } from "../db/connection";
 
 export const getAllUsersService = async () => {
