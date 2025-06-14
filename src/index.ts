@@ -15,7 +15,7 @@ app.use(express.json());
 app.use("/api/user", userRoutes);
 
 //folder routes
-app.use("/api", folderRoutes)
+app.use("/api/folders", folderRoutes)
 
 // test
 // app.get("/", async (req, res) => {
