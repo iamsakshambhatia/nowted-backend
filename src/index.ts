@@ -10,8 +10,8 @@ const PORT = process.env.PORT;
 // middleware
 app.use(express.json());
 
-// routes
-app.use("/api", userRoutes);
+//user routes
+app.use("/api/user", userRoutes);
 
 // test
 // app.get("/", async (req, res) => {
