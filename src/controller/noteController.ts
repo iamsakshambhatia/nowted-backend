@@ -45,6 +45,7 @@ export const getAllNotes = async (req: Request, res: Response) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const search = req.query.search?.toString() || "";
+  const user_id = req.user.id;
   try {
     if (!folderId) {
       console.log("Folder Id is required");
@@ -58,7 +59,8 @@ export const getAllNotes = async (req: Request, res: Response) => {
       folderId,
       page,
       limit,
-      search
+      search,
+      user_id
     );
     handleResponse(res, 200, "Notes fetched successfully", notes, notes.length);
   } catch (error) {
@@ -68,8 +70,9 @@ export const getAllNotes = async (req: Request, res: Response) => {
 };
 
 export const getNoteById = async (req: Request, res: Response) => {
+  const userId = req.user.id;
   try {
-    const note = await getNoteByIdService(req.params.id);
+    const note = await getNoteByIdService(req.params.id, userId);
     if (!note) return handleResponse(res, 400, "Note not found", []);
     handleResponse(res, 200, "Note fetched successfully", note);
   } catch (error) {
@@ -79,8 +82,9 @@ export const getNoteById = async (req: Request, res: Response) => {
 };
 
 export const getRecentNotes = async (req: Request, res: Response) => {
+  const userId = req.user.id;
   try {
-    const notes = await getRecentNotesService();
+    const notes = await getRecentNotesService(userId);
     handleResponse(res, 200, "Notes fetched successfully", notes);
   } catch (error) {
     console.log("getRecentNotes: ", error);
@@ -94,13 +98,15 @@ export const createNote = async (req: Request, res: Response) => {
   if (!validate.success) {
     return handleResponse(res, 400, validate.error);
   }
+  const userId = req.user.id;
   try {
     const newNote = await createNoteService(
       folderId,
       title,
       content,
       isFavorite,
-      isArchive
+      isArchive,
+      userId
     );
     handleResponse(res, 201, "Note created successfully", newNote);
   } catch (error) {
@@ -115,6 +121,7 @@ export const updateNote = async (req: Request, res: Response) => {
   if (!validate.success) {
     return handleResponse(res, 400, validate.error);
   }
+  const userId = req.user.id;
   try {
     const note = await updateNoteService(
       folderId,
@@ -122,7 +129,8 @@ export const updateNote = async (req: Request, res: Response) => {
       content,
       isFavorite,
       isArchive,
-      req.params.id
+      req.params.id,
+      userId
     );
     if (!note) return handleResponse(res, 400, "Note not found", []);
     handleResponse(res, 200, "Note updated successfully");
@@ -133,8 +141,9 @@ export const updateNote = async (req: Request, res: Response) => {
 };
 
 export const deleteNote = async (req: Request, res: Response) => {
+  const userId = req.user.id;
   try {
-    const note = deleteNoteService(req.params.id);
+    const note = deleteNoteService(req.params.id, userId);
     if (!note) return handleResponse(res, 400, "Note not found", []);
     handleResponse(res, 200, "Note deleted successfully");
   } catch (error) {
@@ -144,8 +153,9 @@ export const deleteNote = async (req: Request, res: Response) => {
 };
 
 export const restoreNote = async (req: Request, res: Response) => {
+  const userId = req.user.id;
   try {
-    const note = restoreNoteService(req.params.id);
+    const note = restoreNoteService(req.params.id, userId);
     if (!note) return handleResponse(res, 400, "Note not found", []);
     handleResponse(res, 200, "Note restored successfully");
   } catch (error) {
