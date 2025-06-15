@@ -3,6 +3,7 @@ import "dotenv/config";
 import { pool } from "./db/connection";
 import userRoutes from "./routes/userRoutes";
 import folderRoutes from "./routes/folderRoutes";
+import noteRoutes from "./routes/noteRoutes";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -16,6 +17,9 @@ app.use("/api/user", userRoutes);
 
 //folder routes
 app.use("/api/folders", folderRoutes)
+
+//notes routes
+app.use("/api/notes", noteRoutes);
 
 // test
 // app.get("/", async (req, res) => {
