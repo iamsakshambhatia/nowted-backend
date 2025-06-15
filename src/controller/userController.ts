@@ -183,3 +183,49 @@ export const logoutUser = async (req: Request, res: Response) => {
   res.clearCookie("refresh_token");
   handleResponse(res, 200, "User logged out successfully");
 };
+
+export const getRefreshToken = async (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.headers.cookie
+      ? req.headers.cookie.split(" ")[0].split("=")[1]
+      : null;
+
+    if (!refreshToken) {
+      console.log("refresh token is null");
+      handleResponse(res, 401, "Refresh token is missing");
+      return;
+    }
+
+    const decodeRefreshToken: { id: string; iat: number } =
+      jwtDecode(refreshToken);
+
+    jwt.verify(
+      refreshToken.slice(0, refreshToken.length - 1).trim(),
+      process.env.REFRESH_TOKEN_SECRET ?? "REFRESH_TOKEN_SECRET",
+      (err, user) => {
+        if (err) {
+          console.log(err.message, err);
+          handleResponse(res, 403, err.message);
+          return;
+        }
+
+        const token = jwt.sign(
+          { id: decodeRefreshToken.id },
+          process.env.ACCESS_TOKEN_SECRET ?? "ACCESS_TOKEN_SECRET",
+          {
+            expiresIn: "1d",
+          }
+        );
+
+        if (!token) {
+          console.log("unable to generate token");
+          return handleResponse(res, 400, "Something went wrong");
+        }
+        res.cookie("token", token, { httpOnly: true });
+        return res.json({});
+      }
+    );
+  } catch (error) {
+    handleResponse(res, 401, "Unauthenticated user");
+  }
+};
