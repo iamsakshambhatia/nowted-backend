@@ -36,8 +36,9 @@ export const createFolder = async (req: Request, res: Response) => {
   if (!validate.success) {
     return handleFoldersResponse(res, 400, validate.error);
   }
+  const userId = req.user.id;
   try {
-    const newFolder = await createFolderService(name);
+    const newFolder = await createFolderService(name, userId);
     handleFoldersResponse(res, 201, "Folder created successfully", newFolder);
   } catch (error) {
     console.log("createFolder: ", error);
@@ -50,8 +51,9 @@ export const getAllFolders = async (
   res: Response,
   next: NextFunction
 ) => {
+  const userId = req.user.id;
   try {
-    const folders = await getAllFoldersService();
+    const folders = await getAllFoldersService(userId);
     handleFoldersResponse(res, 200, "folders fetched successfully", folders);
   } catch (error) {
     next(error);
@@ -63,8 +65,9 @@ export const getFolderById = async (
   res: Response,
   next: NextFunction
 ) => {
+  const userId = req.user.id;
   try {
-    const folder = await getFolderByIdService(req.params.id);
+    const folder = await getFolderByIdService(req.params.id, userId);
     if (!folder) {
       return handleFoldersResponse(res, 400, "Folder not found", []);
     }
@@ -80,8 +83,9 @@ export const updateFolder = async (req: Request, res: Response) => {
   if (!validate.success) {
     return handleFoldersResponse(res, 400, validate.error);
   }
+  const userId = req.user.id;
   try {
-    const folder = await updateFolderService(name, req.params.id);
+    const folder = await updateFolderService(name, req.params.id, userId);
     if (!folder) return handleFoldersResponse(res, 400, "Folder not found", []);
     handleFoldersResponse(res, 200, "Folder updated successfully", folder);
   } catch (error) {
@@ -91,9 +95,10 @@ export const updateFolder = async (req: Request, res: Response) => {
 };
 
 export const deleteFolder = async (req: Request, res: Response) => {
+  const userId = req.user.id;
   try {
-    const folder = await deleteFolderService(req.params.id);
-    if (!folder) return handleFoldersResponse(res, 404, "Folder not found", []);
+    const folder = await deleteFolderService(req.params.id, userId);
+    if (!folder) return handleFoldersResponse(res, 400, "Folder not found", []);
     handleFoldersResponse(res, 200, "Folder deleted successfully", folder);
   } catch (error) {
     console.log("deleteFolder: ", error);
@@ -102,9 +107,10 @@ export const deleteFolder = async (req: Request, res: Response) => {
 };
 
 export const restoreFolder = async (req: Request, res: Response) => {
+  const userId = req.user.id;
   try {
-    const folder = await restoreFolderService(req.params.id);
-    if (!folder) return handleFoldersResponse(res, 404, "Folder not found", []);
+    const folder = await restoreFolderService(req.params.id, userId);
+    if (!folder) return handleFoldersResponse(res, 400, "Folder not found", []);
     handleFoldersResponse(res, 200, "Folder restored successfully", folder);
   } catch (error) {
     console.log("restoreFolder: ", error);
